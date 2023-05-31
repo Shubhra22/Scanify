@@ -1,4 +1,4 @@
-Shader "Hidden/ScanningStripes"
+Shader "Custom/ScanningBlur"
 {
     Properties
     {
@@ -8,6 +8,9 @@ Shader "Hidden/ScanningStripes"
         _PositionAndConfidenceTex("RaycastPositionAndConfidence", 2D) = "white" {}
         _ScreenOrientation("ScreenOrientation", int) = 0
         _StripeColor ("StripeColor", Color) = (1,0,0,1)
+        // Color of the background
+        _BackgroundColor("BackgroundColor", Color) = (1, 1, 1, 1)
+
     }
     SubShader
     {
@@ -22,6 +25,7 @@ Shader "Hidden/ScanningStripes"
 
             #include "UnityCG.cginc"
             fixed4 _StripeColor;
+            fixed4 _BackgroundColor;
             sampler2D _MainTex;
             sampler2D _ColorTex;
             float4 _MainTex_TexelSize;
@@ -78,32 +82,57 @@ Shader "Hidden/ScanningStripes"
                 // Blend raycast color over the stripe color.
                 return color * color.a + stripeColor * (1 - color.a);
             }
-
-            */
+*/
+            
             fixed4 frag (v2f i, UNITY_VPOS_TYPE screenPos : VPOS) : SV_Target
             {
                 // Sample the raycast color from _ColorTex.
                 fixed4 color = tex2D(_ColorTex, GetRaycastSampleUV(i.uv));
 
                 // Compute the color of the dot pattern.
-                float2 dotCoord = float2(screenPos.x, screenPos.y) / 16;
+                float2 dotCoord = float2(screenPos.x, screenPos.y) / 10;
                 float2 dotPos = floor(dotCoord) + 0.5f;
                 float2 dotOffset = dotCoord - dotPos;
-                float dotRadius = 0.4f;
+                float dotRadius = 0.6f;
                 float dotIntensity = 1.0f - saturate(length(dotOffset) / dotRadius);
-                fixed4 dotColor = dotIntensity * _StripeColor;
+                //fixed4 dotColor = (1 - dotIntensity) * _StripeColor;//dotIntensity * _StripeColor;
 
                 //return dotColor;
                 // Blend raycast color over the dot color.
                 //return color * color.a + dotColor * (1 - color.a);
 
-                if (color.a > 0) {
+                fixed4 dotColor = dotIntensity * _StripeColor;
+                fixed4 bgColor = _BackgroundColor;
+
+                if (color.a > 0)
+                {
                     return color;
-                } else {
-                    return dotColor;
                 }
+                else
+                {
+                    return lerp(bgColor, dotColor, dotIntensity);
+                }
+
+
+                
             }
             
+
+/*
+            fixed4 frag (v2f i, UNITY_VPOS_TYPE screenPos : VPOS) : SV_Target
+            {
+                
+                // Otherwise, sample the raycast color from _ColorTex.
+                fixed4 color = tex2D(_ColorTex, GetRaycastSampleUV(i.uv));
+                fixed4 mainT = tex2D(_MainTex, i.uv) * _StripeColor;
+                mainT.a = 0.5;
+                // Return the raycast color.
+                return color * color.a + mainT * (1 - color.a);
+;
+            }
+
+*/
+
             ENDCG
         }
     }
