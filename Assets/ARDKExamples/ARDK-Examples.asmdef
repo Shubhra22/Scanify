@@ -3,7 +3,11 @@
     "rootNamespace": "",
     "references": [
         "ARDK",
-        "Unity.RenderPipelines.Universal.Runtime"
+        "Unity.RenderPipelines.Universal.Runtime",
+        "BzKovSoft.ObjectSlicer",
+        "BzKovSoft.ObjectSlicer.Samples",
+        "Unity.TextMeshPro",
+        "Unity.Mathematics"
     ],
     "includePlatforms": [
         "Android",
