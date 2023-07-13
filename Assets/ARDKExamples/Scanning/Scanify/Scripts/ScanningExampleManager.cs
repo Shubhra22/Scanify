@@ -71,6 +71,8 @@ namespace ARDKExamples.Scanning
         [SerializeField] private Text _scanQualityMainText;
         [SerializeField] private Text _scanQualityDetailText;
 
+        public RawImage preview;
+
         private string _currentPoiName;
 
         // Last state of the scanner:
@@ -161,6 +163,8 @@ namespace ARDKExamples.Scanning
             }
 
             _scanManager.SaveCurrentScan();
+            preview.texture = RuntimePreviewGenerator.GenerateModelPreview(scannedObject.transform,256,256);
+
             RestartButtonPressed();
         }
 
@@ -332,6 +336,7 @@ namespace ARDKExamples.Scanning
         private void Update()
         {
             UpdateUI();
+            Debug.Log(exampleState);
         }
 
         private void UpdateUI()
@@ -348,12 +353,13 @@ namespace ARDKExamples.Scanning
                 {
                     _statusText.text = "" + scannerState;
                     FindButton("ScanButton").SetActive(scannerState == IScanner.State.Ready);
+                    //FindButton("RangeSlider").SetActive(scannerState == IScanner.State.Ready);
                     FindButton("PauseButton").SetActive(scannerState == IScanner.State.Scanning);
                     FindButton("ResumeButton").SetActive(scannerState == IScanner.State.Paused);
-                    //FindButton("SavedScanListButton").SetActive(scannerState == IScanner.State.Ready);
                     FindButton("SavedScanBackToListButton").SetActive(false);
                     _savedScanGlobalRoot.gameObject.SetActive(false);
-                    FindButton("StopButton").SetActive(scannerState == IScanner.State.Scanning);
+                    FindButton("StopButton").SetActive(scannerState == IScanner.State.Scanning ||
+                                                        scannerState == IScanner.State.Paused);
                     //FindButton("VisButton").SetActive(scannerState == IScanner.State.Ready && _enabledVisualizers.Count >= 2);
                     FindButton("ProcessButton").SetActive(scannerState == IScanner.State.ScanCompleted);
                     FindButton("CancelProcessButton").SetActive(scannerState == IScanner.State.Processing);
@@ -361,6 +367,7 @@ namespace ARDKExamples.Scanning
                                                           scannerState == IScanner.State.Cancelled ||
                                                           scannerState == IScanner.State.Error);
                     FindButton("SaveButton").SetActive(scannerState == IScanner.State.Done);
+                    FindButton("SettingButton").SetActive(scannerState == IScanner.State.Ready);
                     _mockBackground.SetActive(scannerState == IScanner.State.Done);
                     _progressBar.gameObject.SetActive(scannerState == IScanner.State.Processing);
                 }

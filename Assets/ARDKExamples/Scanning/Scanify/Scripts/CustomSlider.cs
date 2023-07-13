@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using Unity.Mathematics;
 using Niantic.ARDK.Extensions.Scanning;
+using System;
 
 public class CustomSlider : MonoBehaviour
 {
@@ -49,7 +50,12 @@ public class CustomSlider : MonoBehaviour
 
         float newVal = unitScale + math.remap(0f, 1f, ruler.MinValue, ruler.MaxValue, 0.5f);
         SliderValue = newVal;
-        sliderValueText.text = newVal.ToString("0.0") + measurementUnit; ;
+        sliderValueText.text = newVal.ToString("0.0") + measurementUnit;
+    }
+
+    private void onRangeToggleChanged(bool clicked)
+    {
+        gameObject.SetActive(clicked);
     }
 
     void onScrollBarValueChanged(float val)

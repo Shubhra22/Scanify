@@ -4,6 +4,7 @@
     "references": [
         "ARDK",
         "Unity.RenderPipelines.Universal.Runtime",
+        "RuntimePreviewGenerator.Runtime",
         "BzKovSoft.ObjectSlicer",
         "BzKovSoft.ObjectSlicer.Samples",
         "Unity.TextMeshPro",
